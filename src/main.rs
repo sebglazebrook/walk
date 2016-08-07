@@ -4,7 +4,7 @@ use std::path::PathBuf;
 fn output_file_path(path: PathBuf) {
     let mut cleaned_path = path.as_os_str().to_str().unwrap();
     if path.starts_with("./") {
-        let (_, new_path) = cleaned_path.split_at(1 + 1);
+        let (_, new_path) = cleaned_path.split_at(2);
         cleaned_path = new_path;
     }
     println!("{}", cleaned_path);
