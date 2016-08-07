@@ -1,7 +1,7 @@
 use std::fs;
 use std::path::PathBuf;
 
-fn walk_dir(path: PathBuf ) {
+fn walk_dir(path: PathBuf) {
     match fs::read_dir(path) {
         Ok(read_dir) => {
             for entry in read_dir {
