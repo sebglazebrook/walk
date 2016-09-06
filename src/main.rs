@@ -27,7 +27,6 @@ fn walk_dir<F>(path: PathBuf, renderer: Arc<F>) where F : Fn(std::fs::DirEntry) 
     }
 }
 
-
 fn generate_path_from_entry(entry: &std::fs::DirEntry) -> String {
     let path = entry.path();
     let mut cleaned_path = path.as_os_str().to_str().unwrap();
@@ -69,16 +68,12 @@ fn main() {
     let path_renderer = |entry: std::fs::DirEntry| {
         let path = generate_path_from_entry(&entry);
 
+        if path.starts_with(".") && !show_hidden { return; }
+
         let file_type = entry.file_type().unwrap();
-        if file_type.is_dir() && show_directories {
-            println!("{}", path);
-        }
-        if file_type.is_file() && show_files {
-            println!("{}", path);
-        }
+        if file_type.is_dir() && show_directories { println!("{}", path); }
+        if file_type.is_file() && show_files { println!("{}", path); }
     };
-
-
 
 
     walk_dir(PathBuf::from("."), Arc::new(path_renderer));
