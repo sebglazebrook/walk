@@ -27,6 +27,17 @@ fn walk_dir<F>(path: PathBuf, renderer: Arc<F>) where F : Fn(std::fs::DirEntry) 
     }
 }
 
+
+fn generate_path_from_entry(entry: &std::fs::DirEntry) -> String {
+    let path = entry.path();
+    let mut cleaned_path = path.as_os_str().to_str().unwrap();
+    if path.starts_with("./") {
+        let (_, new_path) = cleaned_path.split_at(2);
+        cleaned_path = new_path;
+    }
+    cleaned_path.to_string()
+}
+
 fn main() {
 
     let yaml = load_yaml!("../config/cli.yml");
@@ -56,19 +67,14 @@ fn main() {
     }
 
     let path_renderer = |entry: std::fs::DirEntry| {
-        let path = entry.path();
-        let mut cleaned_path = path.as_os_str().to_str().unwrap();
-        if path.starts_with("./") {
-            let (_, new_path) = cleaned_path.split_at(2);
-            cleaned_path = new_path;
-        }
+        let path = generate_path_from_entry(&entry);
 
         let file_type = entry.file_type().unwrap();
         if file_type.is_dir() && show_directories {
-            println!("{}", cleaned_path);
+            println!("{}", path);
         }
         if file_type.is_file() && show_files {
-            println!("{}", cleaned_path);
+            println!("{}", path);
         }
     };
 
