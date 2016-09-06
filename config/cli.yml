@@ -1,0 +1,30 @@
+name: finder
+version: "1.0"
+author: Seb Glazebrook
+about: find this on your file system fast
+args:
+    - all:
+        help: Show all files/directories even hidden or git/ag ignorable files/directories
+        short: A
+        long: all
+        multiple: true
+        global: true
+        conflicts_with:
+            - directories_only
+            - files_only
+    - files_only:
+        help: Only show the files found
+        short: F
+        long: files-only
+        multiple: true
+        global: true
+        conflicts_with:
+            - directories_only
+    - directories_only:
+        help: Only show the directories found
+        short: D
+        long: directories-only
+        multiple: true
+        global: true
+        conflicts_with:
+            - files_only
