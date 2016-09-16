@@ -21,7 +21,6 @@ finder --files-only             # only returns the files found
 
 ## TODO
 
-- Ignore files in .gitignore .hgignore .agignore
+- Ignore files in .gitignore .agignore
 - Speed up using threads
 - allow user to specify the start path
-- allow user to filter down to only files or only directories
