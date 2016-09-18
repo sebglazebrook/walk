@@ -14,7 +14,7 @@ impl Ignorer {
     pub fn ignore(&self, path: &PathBuf) -> bool {
         let mut should_ignore = false;
         for (gitignore_path, contents) in &self.gitignore_contents {
-            let optional = contents.lines().find(|&line| {
+            let optional = contents.lines().find(|line| {
                 let check_path = gitignore_path.clone() + "/" + line.trim(); 
                 check_path == path.to_str().unwrap()
             });
