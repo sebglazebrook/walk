@@ -23,7 +23,7 @@ fn walk_dir<F>(path: PathBuf, entry_callback: Arc<F>, igorablable_filesources: &
                         let path = entry.path();
 
                         if igorablable_filesources.contains(&file_name) {
-                            let mut ignore_file = path.clone();
+                            let ignore_file = path.clone();
                             let mut f = File::open(ignore_file.to_str().unwrap()).unwrap();
                             let mut gitignore_contents = String::new();
                             f.read_to_string(&mut gitignore_contents).unwrap();
