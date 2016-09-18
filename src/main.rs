@@ -1,22 +1,25 @@
-#[macro_use]
-extern crate clap;
+extern crate finder;
 
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
-use clap::App;
+use finder::Config;
 
-fn walk_dir<F>(path: PathBuf, renderer: Arc<F>) where F : Fn(std::fs::DirEntry) {
+fn walk_dir<F>(path: PathBuf, entry_callback: Arc<F>) where F : Fn(std::fs::DirEntry) {
     match fs::read_dir(path) {
         Ok(read_dir) => {
             for entry in read_dir {
                 match entry {
                     Ok(entry) => {
+
+                        let file_name = entry.file_name();
+                        let file_name = file_name.to_str().unwrap();
                         let file_type = entry.file_type().unwrap();
                         let path = entry.path();
-                        renderer(entry);
+
+                        entry_callback(entry);
                         if file_type.is_dir() {
-                            walk_dir(path, renderer.clone());
+                            walk_dir(path, entry_callback.clone());
                         }
                     }
                     Err(_) => {}
@@ -37,42 +40,19 @@ fn generate_path_from_entry(entry: &std::fs::DirEntry) -> String {
     cleaned_path.to_string()
 }
 
+
 fn main() {
 
-    let yaml = load_yaml!("../config/cli.yml");
-    let matches = App::from_yaml(yaml).get_matches();
-
-
-    let show_files;
-    if matches.is_present("directories_only") {
-        show_files = false;
-    } else {
-        show_files = true;
-    }
-
-    let show_directories;
-    if matches.is_present("files_only") {
-        show_directories = false;
-    } else {
-        show_directories = true;
-    }
-
-    let mut show_hidden = false;
-    let mut show_ignorable = false;
-
-    if matches.is_present("all") {
-        show_hidden = true;
-        show_ignorable = true;
-    }
+    let config = Config::new();
 
     let path_renderer = |entry: std::fs::DirEntry| {
         let path = generate_path_from_entry(&entry);
 
-        if path.starts_with(".") && !show_hidden { return; }
+        if path.starts_with(".") && !config.show_hidden { return; }
 
         let file_type = entry.file_type().unwrap();
-        if file_type.is_dir() && show_directories { println!("{}", path); }
-        if file_type.is_file() && show_files { println!("{}", path); }
+        if file_type.is_dir() && config.show_directories { println!("{}", path); }
+        if file_type.is_file() && config.show_files { println!("{}", path); }
     };
 
 
