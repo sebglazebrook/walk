@@ -3,9 +3,14 @@ extern crate finder;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
-use finder::Config;
+use std::io::prelude::*;
+use std::fs::File;
 
-fn walk_dir<F>(path: PathBuf, entry_callback: Arc<F>) where F : Fn(std::fs::DirEntry) {
+use finder::Config;
+use finder::Ignorer;
+
+fn walk_dir<F>(path: PathBuf, entry_callback: Arc<F>, igorablable_filesources: &Vec<&str>, ignorer: &mut Ignorer) where F : Fn(std::fs::DirEntry) {
+    // TODO look for ignoreable filesources and add them to ignorer
     match fs::read_dir(path) {
         Ok(read_dir) => {
             for entry in read_dir {
@@ -17,9 +22,20 @@ fn walk_dir<F>(path: PathBuf, entry_callback: Arc<F>) where F : Fn(std::fs::DirE
                         let file_type = entry.file_type().unwrap();
                         let path = entry.path();
 
-                        entry_callback(entry);
-                        if file_type.is_dir() {
-                            walk_dir(path, entry_callback.clone());
+                        if igorablable_filesources.contains(&file_name) {
+                            let mut ignore_file = path.clone();
+                            let mut f = File::open(ignore_file.to_str().unwrap()).unwrap();
+                            let mut gitignore_contents = String::new();
+                            f.read_to_string(&mut gitignore_contents).unwrap();
+                            let ignore_root = ignore_file.parent().unwrap().to_path_buf();
+                            ignorer.add_gitignore(&gitignore_contents, &ignore_root);
+                        }
+
+                        if !ignorer.ignore(&path) {
+                            entry_callback(entry);
+                            if file_type.is_dir() {
+                                walk_dir(path, entry_callback.clone(), igorablable_filesources, ignorer);
+                            }
                         }
                     }
                     Err(_) => {}
@@ -56,5 +72,9 @@ fn main() {
     };
 
 
-    walk_dir(PathBuf::from("."), Arc::new(path_renderer));
+    let ignorablable_filesources = vec![".gitignore"];//, ".agignore"];
+
+    let mut ignorer = Ignorer::new();
+
+    walk_dir(PathBuf::from("."), Arc::new(path_renderer), &ignorablable_filesources, &mut ignorer);
 }
