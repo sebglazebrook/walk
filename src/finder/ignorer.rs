@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 use std::collections::HashMap;
+use std::io::prelude::*;
+use std::fs::File;
 
 pub struct Ignorer {
     gitignore_contents: HashMap<String, String>,
@@ -31,6 +33,15 @@ impl Ignorer {
 
     pub fn add_gitignore(&mut self, contents: &str, path: &PathBuf) {
         self.gitignore_contents.insert(path.to_str().unwrap().to_string(), contents.to_string());
+    }
+
+    pub fn add_ignore_file(&mut self, filepath: &PathBuf) {
+        let ignore_file = filepath.clone();
+        let mut f = File::open(ignore_file.to_str().unwrap()).unwrap();
+        let mut file_contents = String::new();
+        f.read_to_string(&mut file_contents).unwrap();
+        let ignore_root = ignore_file.parent().unwrap().to_path_buf();
+        self.add_gitignore(&file_contents, &ignore_root);
     }
 }
 

@@ -3,32 +3,25 @@ extern crate finder;
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
-use std::io::prelude::*;
-use std::fs::File;
 
 use finder::Config;
 use finder::Ignorer;
 
 fn walk_dir<F>(path: PathBuf, entry_callback: Arc<F>, igorablable_filesources: &Vec<&str>, ignorer: &mut Ignorer) where F : Fn(std::fs::DirEntry) {
-    // TODO look for ignoreable filesources and add them to ignorer
     match fs::read_dir(path) {
         Ok(read_dir) => {
             for entry in read_dir {
                 match entry {
                     Ok(entry) => {
 
-                        let file_name = entry.file_name();
-                        let file_name = file_name.to_str().unwrap();
+                        let temp_file_name = entry.file_name();
+                        let file_name = temp_file_name.to_str().unwrap();
+
                         let file_type = entry.file_type().unwrap();
                         let path = entry.path();
 
                         if igorablable_filesources.contains(&file_name) {
-                            let ignore_file = path.clone();
-                            let mut f = File::open(ignore_file.to_str().unwrap()).unwrap();
-                            let mut gitignore_contents = String::new();
-                            f.read_to_string(&mut gitignore_contents).unwrap();
-                            let ignore_root = ignore_file.parent().unwrap().to_path_buf();
-                            ignorer.add_gitignore(&gitignore_contents, &ignore_root);
+                            ignorer.add_ignore_file(&path);
                         }
 
                         if !ignorer.ignore(&path) {
@@ -72,7 +65,7 @@ fn main() {
     };
 
 
-    let ignorablable_filesources = vec![".gitignore"];//, ".agignore"];
+    let ignorablable_filesources = vec![".gitignore", ".agignore"];
 
     let mut ignorer = Ignorer::new();
 

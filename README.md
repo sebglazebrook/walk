@@ -19,8 +19,9 @@ finder --files-only             # only returns the files found
 ```
 
 
-## TODO
+## TODO Overall
 
-- Ignore files in .gitignore .agignore
 - Speed up using threads
 - allow user to specify the start path
+
+# TODO
