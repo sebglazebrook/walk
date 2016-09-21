@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate clap;
 
-mod finder;
+mod walk;
 
-pub use finder::Config;
-pub use finder::Ignorer;
+pub use walk::Config;
+pub use walk::Ignorer;

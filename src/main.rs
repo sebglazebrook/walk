@@ -1,11 +1,11 @@
-extern crate finder;
+extern crate walk;
 
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use finder::Config;
-use finder::Ignorer;
+use walk::Config;
+use walk::Ignorer;
 
 fn walk_dir<F>(path: PathBuf, entry_callback: Arc<F>, igorablable_filesources: &Vec<&str>, ignorer: &mut Ignorer) where F : Fn(std::fs::DirEntry) {
     match fs::read_dir(path) {
