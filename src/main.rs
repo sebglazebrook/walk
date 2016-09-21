@@ -64,10 +64,12 @@ fn main() {
         if file_type.is_file() && config.show_files { println!("{}", path); }
     };
 
-
-    let ignorablable_filesources = vec![".gitignore", ".agignore"];
-
+    let mut ignorablable_filesources = Vec::new();
     let mut ignorer = Ignorer::new();
+    if !config.show_ignorable {
+      ignorablable_filesources.push(".gitignore");
+      ignorablable_filesources.push(".agignore");
+    }
 
     walk_dir(config.start_directory.clone(), Arc::new(path_renderer), &ignorablable_filesources, &mut ignorer);
 }
