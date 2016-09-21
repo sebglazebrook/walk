@@ -1,10 +1,12 @@
 use clap::App;
+use std::path::PathBuf;
 
 pub struct Config {
     pub show_files: bool,
     pub show_directories: bool,
     pub show_hidden: bool,
     pub show_ignorable: bool,
+    pub start_directory: PathBuf,
 }
 
 impl Config {
@@ -27,6 +29,13 @@ impl Config {
             show_directories = true;
         }
 
+        let start_directory;
+        if matches.is_present("start_directory") {
+            start_directory = PathBuf::from(matches.value_of("start_directory").unwrap());
+        } else {
+            start_directory = PathBuf::from(".");
+        }
+
         let mut show_hidden = false;
         let mut show_ignorable = false;
 
@@ -34,6 +43,13 @@ impl Config {
             show_hidden = true;
             show_ignorable = true;
         }
-        Config { show_files: show_files, show_directories: show_directories, show_hidden: show_hidden, show_ignorable: show_ignorable }
+
+        Config {
+            show_files: show_files,
+            show_directories: show_directories,
+            show_hidden: show_hidden,
+            show_ignorable: show_ignorable,
+            start_directory: start_directory
+        }
     }
 }

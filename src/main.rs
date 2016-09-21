@@ -69,5 +69,5 @@ fn main() {
 
     let mut ignorer = Ignorer::new();
 
-    walk_dir(PathBuf::from("."), Arc::new(path_renderer), &ignorablable_filesources, &mut ignorer);
+    walk_dir(config.start_directory.clone(), Arc::new(path_renderer), &ignorablable_filesources, &mut ignorer);
 }

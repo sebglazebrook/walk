@@ -28,3 +28,7 @@ args:
         global: true
         conflicts_with:
             - files_only
+    - start_directory:
+        help: directory to start crawling from
+        index: 1
+        required: false
