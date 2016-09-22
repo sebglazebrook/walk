@@ -65,7 +65,10 @@ fn main() {
     };
 
 
-    let ignorablable_filesources = vec![".gitignore", ".agignore"];
+    let mut ignorablable_filesources = vec![];
+    if !config.show_ignorable {
+        ignorablable_filesources.append(&mut vec![".gitignore", ".agignore"]);
+    }
 
     let mut ignorer = Ignorer::new();
 
